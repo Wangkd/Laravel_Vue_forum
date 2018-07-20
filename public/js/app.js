@@ -48936,9 +48936,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     methods: {
-        markAsRead: function markAsRead(notification) {
-            // profiles/{user}/notifications/{notification}
-            axios.delete('/profiles/' + window.App.user.name + '/notifications/' + notification.id);
+        markAsRead: function markAsRead(index, notification) {
+            var _this2 = this;
+
+            axios.delete('/profiles/' + window.App.user.name + '/notifications/' + notification.id).then(function () {
+                return _this2.notifications.splice(index, 1);
+            });
         }
     }
 });
@@ -48953,24 +48956,12 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _vm.notifications.length
     ? _c("li", { staticClass: " dropdown" }, [
-        _c(
-          "a",
-          {
-            staticClass: "nav-link dropdown-toggle",
-            attrs: {
-              id: "navbarDropdown",
-              href: "#",
-              role: "button",
-              "data-toggle": "dropdown"
-            }
-          },
-          [_vm._v("\n        Notifications\n    ")]
-        ),
+        _vm._m(0),
         _vm._v(" "),
         _c(
           "div",
           { staticClass: "dropdown-menu" },
-          _vm._l(_vm.notifications, function(notification) {
+          _vm._l(_vm.notifications, function(notification, index) {
             return _c("div", { key: notification.id }, [
               _c("a", {
                 staticClass: "dropdown-item",
@@ -48978,7 +48969,7 @@ var render = function() {
                 domProps: { textContent: _vm._s(notification.data.message) },
                 on: {
                   click: function($event) {
-                    _vm.markAsRead(notification)
+                    _vm.markAsRead(index, notification)
                   }
                 }
               })
@@ -48988,7 +48979,21 @@ var render = function() {
       ])
     : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "nav-link",
+        attrs: { href: "#", role: "button", "data-toggle": "dropdown" }
+      },
+      [_c("span", { staticClass: "fa fa-bell-o" })]
+    )
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

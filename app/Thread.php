@@ -4,7 +4,6 @@ namespace App;
 
 
 use App\Reply;
-use App\Notifications\ThreadWasUpdated;
 
 class Thread extends Model
 {
@@ -25,8 +24,6 @@ class Thread extends Model
             // $thread->update(['slug' => $thread->title]);
         });
     }
-
-
 
     public function subscribe($userId = null) {
         $this->subscriptions()->create([
@@ -60,13 +57,17 @@ class Thread extends Model
 
     public function addReply($reply) {
         $reply = $this->replies()->create($reply);
-        foreach ($this->subscriptions as $sub) {
-            if($sub->user_id != $reply->user_id) {
-                $sub->user->notify(new ThreadWasUpdated($this, $reply));
-            }
-        }
+
+        $this->notifySubscribers($reply);
 
         return $reply;
+    }
+
+    public function notifySubscribers($reply) {
+        $this->subscriptions
+             ->where('user_id', '!=', $reply->user_id)
+             ->each
+             ->notify($reply);
     }
 
     public function scopeFilter($query, $filters) {
