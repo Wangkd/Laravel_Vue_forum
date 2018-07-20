@@ -4,8 +4,14 @@
 
 <script>
 export default {
-    props: ['active'],
+    props: ['subscribed'],
 
+    data() {
+        return {
+            active: this.subscribed
+        }
+    },
+    
     computed: {
         classes() {
             return ['btn', this.active ? 'btn-secondary' : 'btn-primary'];

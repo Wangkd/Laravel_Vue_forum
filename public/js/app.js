@@ -48804,7 +48804,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['active'],
+    props: ['subscribed'],
+
+    data: function data() {
+        return {
+            active: this.subscribed
+        };
+    },
+
 
     computed: {
         classes: function classes() {
@@ -48920,11 +48927,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     created: function created() {
         var _this = this;
 
-        axios.get('/profiles/' + window.App.user.id + '/notifications').then(function (_ref) {
+        axios.get('/profiles/' + window.App.user.name + '/notifications').then(function (_ref) {
             var data = _ref.data;
 
             _this.notifications = data;
         });
+    },
+
+
+    methods: {
+        markAsRead: function markAsRead(notification) {
+            // profiles/{user}/notifications/{notification}
+            axios.delete('/profiles/' + window.App.user.name + '/notifications/' + notification.id);
+        }
     }
 });
 
@@ -48957,15 +48972,16 @@ var render = function() {
           { staticClass: "dropdown-menu" },
           _vm._l(_vm.notifications, function(notification) {
             return _c("div", { key: notification.id }, [
-              _c(
-                "a",
-                {
-                  staticClass: "dropdown-item",
-                  attrs: { href: notification.data.link },
-                  domProps: { textContent: _vm._s(notification.data.message) }
-                },
-                [_vm._v("foo")]
-              )
+              _c("a", {
+                staticClass: "dropdown-item",
+                attrs: { href: notification.data.link },
+                domProps: { textContent: _vm._s(notification.data.message) },
+                on: {
+                  click: function($event) {
+                    _vm.markAsRead(notification)
+                  }
+                }
+              })
             ])
           })
         )

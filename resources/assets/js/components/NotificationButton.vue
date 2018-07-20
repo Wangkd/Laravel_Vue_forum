@@ -5,7 +5,7 @@
         </a>
         <div class="dropdown-menu">
             <div v-for="notification in notifications" :key='notification.id'>
-                <a class="dropdown-item" :href="notification.data.link" v-text="notification.data.message">foo</a>
+                <a class="dropdown-item" :href="notification.data.link" v-text="notification.data.message" @click="markAsRead(notification)"></a>
             </div>
         </div>
     </li>
@@ -20,10 +20,17 @@
         },
 
         created() {
-            axios.get('/profiles/' + window.App.user.id + '/notifications')
+            axios.get('/profiles/' + window.App.user.name + '/notifications')
                  .then(({data}) => {
                      this.notifications = data;
                  })
+        },
+
+        methods: {
+            markAsRead(notification) {
+                // profiles/{user}/notifications/{notification}
+                axios.delete('/profiles/' + window.App.user.name + '/notifications/' + notification.id);
+            }
         }
     }
 </script>
