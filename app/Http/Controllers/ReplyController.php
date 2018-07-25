@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Thread;
 use App\Channel;
 use App\Reply;
+use App\Spam;
 
 class ReplyController extends Controller
 {
@@ -18,11 +19,12 @@ class ReplyController extends Controller
         return $thread->replies()->paginate(10);
     }
     
-    public function store(Request $request, $channel, Thread $thread)
+    public function store($channel, Thread $thread, Spam $spam)
     {
-        $this->validate($request, [
+        $this->validate(request(), [
             'body' => 'required'
         ]);
+        $spam->detect(request('body'));
         
         $reply = $thread->addReply([
             'body' => request('body'),
