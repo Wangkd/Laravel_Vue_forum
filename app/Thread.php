@@ -63,6 +63,12 @@ class Thread extends Model
         return $reply;
     }
 
+    public function hasUpdatesFor($user) {
+        $key = sprintf('user.%s.visits.thread.%s', $user->id, $this->id);
+
+        return cache($key) != null && $this->updated_at > cache($key);
+    }
+
     public function notifySubscribers($reply) {
         $this->subscriptions
              ->where('user_id', '!=', $reply->user_id)

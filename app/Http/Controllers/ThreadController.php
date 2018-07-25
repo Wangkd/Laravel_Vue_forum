@@ -17,8 +17,6 @@ class ThreadController extends Controller
     public function index(Channel $channel, ThreadFilter $filters)
     {
         $threads = $this->getThreads($channel, $filters);
-
-        // return $threads;
         
         return view('thread.index', compact('threads'));
     }
@@ -56,12 +54,10 @@ class ThreadController extends Controller
         
     public function show($channelId, Thread $thread)
     {
-        // return $thread->replies;
-        $replies = $thread->replies()->paginate(10);
-        return view('thread.show', [
-            'thread' => $thread,
-            'replies' => $replies
-        ]);
+        $key = sprintf('user.%s.visits.thread.%s', auth()->id(), $thread->id);
+        cache()->forever($key, \Carbon\Carbon::now());
+        
+        return view('thread.show',compact('thread'));
     }
             
     public function getThreads($channel, $filters) {
