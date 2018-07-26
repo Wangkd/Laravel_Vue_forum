@@ -14043,7 +14043,8 @@ window.Vue = __webpack_require__(38);
 
 window.events = new Vue();
 window.flash = function (message) {
-  return window.events.$emit('flash', message);
+  var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
+  return window.events.$emit('flash', { message: message, level: level });
 };
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -47747,6 +47748,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             body: '',
+            level: 'success',
             show: false
         };
     },
@@ -47757,15 +47759,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.flash(this.message);
         }
 
-        window.events.$on('flash', function (message) {
-            return _this.flash(message);
+        window.events.$on('flash', function (data) {
+            return _this.flash(data);
         });
     },
 
 
     methods: {
-        flash: function flash(message) {
-            this.body = message;
+        flash: function flash(data) {
+            this.body = data.message;
+            this.level = data.level;
             this.show = true;
             this.hide();
         },
@@ -47793,9 +47796,10 @@ var render = function() {
       directives: [
         { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
       ],
-      staticClass: "alert alert-success alert-flash"
+      staticClass: "alert alert-flash",
+      class: "alert-" + _vm.level
     },
-    [_c("strong", [_vm._v("Success!")]), _vm._v(" " + _vm._s(_vm.body) + "\n")]
+    [_vm._v("\n    " + _vm._s(_vm.body) + "\n")]
   )
 }
 var staticRenderFns = []
@@ -47998,11 +48002,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             axios.patch('/replies/' + this.data.id, {
                 body: this.body
+            }).then(function () {
+                return flash('reply updated');
+            }).catch(function (error) {
+                flash(error.response.data, 'danger');
             });
 
             this.editting = false;
-
-            flash('reply updated');
         },
         destroy: function destroy() {
             axios.delete('/replies/' + this.data.id);
@@ -48557,6 +48563,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.body = '';
                 _this.$emit('added', data);
                 flash('Your reply has been added');
+            }).catch(function (error) {
+                flash(error.response.data, 'danger');
             });
         }
     }

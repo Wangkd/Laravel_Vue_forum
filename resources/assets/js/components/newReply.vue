@@ -34,6 +34,9 @@ export default {
                     this.$emit('added', data);
                     flash('Your reply has been added');
                 })
+                .catch(error => {
+                    flash(error.response.data, 'danger');
+                })
         }
     }
 }

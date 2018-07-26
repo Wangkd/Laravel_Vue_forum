@@ -64,11 +64,14 @@ export default {
         update() {
             axios.patch('/replies/' + this.data.id,{
                 body: this.body
-            });
+            })
+                .then(() => flash('reply updated'))
+                .catch(error => {
+                    flash(error.response.data, 'danger')
+                })
             
             this.editting = false;
             
-            flash('reply updated');
         },
 
         destroy() {

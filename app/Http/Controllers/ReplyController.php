@@ -21,13 +21,17 @@ class ReplyController extends Controller
     
     public function store($channel, Thread $thread)
     {
-        $this->validateReply();
+        try {
+            $this->validateReply();
         
-        $reply = $thread->addReply([
-            'body' => request('body'),
-            'user_id' => auth()->id()
-        ]);
-
+            $reply = $thread->addReply([
+                'body' => request('body'),
+                'user_id' => auth()->id()
+            ]);
+        } catch(\Exception $e) {
+            return response("Sorry, your reply can't be added", 422);
+        }
+        
         return $reply->load('owner');
     }
 
@@ -38,11 +42,15 @@ class ReplyController extends Controller
 
     public function update(Reply $reply) {
         // $this->authorize('update', $reply);
-        $this->validateReply();
+        try {
+            $this->validateReply();
         
-        $reply->update([
-            'body' => request('body')
-        ]);
+            $reply->update([
+                'body' => request('body')
+            ]);
+        } catch(\Exception $e) {
+            return response("Sorry, your reply can't be updated", 422);
+        }
     }
 
     public function validateReply() {
