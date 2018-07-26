@@ -6,6 +6,7 @@ use App\Thread;
 use App\Channel;
 use Illuminate\Http\Request;
 use App\Filters\ThreadFilter;
+use App\Inspections\Spam;
 
 class ThreadController extends Controller
 {
@@ -32,13 +33,16 @@ class ThreadController extends Controller
         return redirect('/threads');
     }
     
-    public function store(Request $request)
+    public function store(Spam $spam)
     {
-        $this->validate($request, [
+        $this->validate(request(), [
             'body' => 'required',
             'title' => 'required', 
             'channel_id' => 'required|exists:channels,id'
         ]);
+        $spam->detect(request('title'));
+        $spam->detect(request('body'));
+        
         $thread = Thread::create([
             'title' => request('title'),
             'body' => request('body'),
@@ -47,7 +51,7 @@ class ThreadController extends Controller
         ]);
             
         $thread->save();
-        // return $thread;   
+
         return redirect($thread->path())
                 ->with('flash', 'Your thread has been created');
     }
